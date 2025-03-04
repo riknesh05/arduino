@@ -1,0 +1,110 @@
+#include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
+#include <SD.h>
+#include <SPI.h>
+
+#define RELAY1_PIN D1
+#define RELAY2_PIN D2
+#define BUTTON1_PIN D3
+#define BUTTON2_PIN D4
+#define CS_PIN D8 // Chip select pin for SD card
+
+ESP8266WebServer server(80);
+bool relay1State = LOW;
+bool relay2State = LOW;
+
+void setup() {
+  pinMode(RELAY1_PIN, OUTPUT);
+  pinMode(RELAY2_PIN, OUTPUT);
+  pinMode(BUTTON1_PIN, INPUT_PULLUP);
+  pinMode(BUTTON2_PIN, INPUT_PULLUP);
+  Serial.begin(115200);
+
+  // Start SD card
+  if (!SD.begin(CS_PIN)) {
+    Serial.println("SD Card initialization failed!");
+    return;
+  }
+  Serial.println("SD Card initialized.");
+
+  // Start WiFi as an Access Point
+  WiFi.softAP("ESP8266_Hotspot", "12345678");
+  Serial.println("Access Point Started");
+  Serial.print("IP Address: ");
+  Serial.println(WiFi.softAPIP());
+
+  // Set up web server to serve files from SD card
+  server.onNotFound([]() {
+    String path = server.uri();
+    if (path == "/") path = "/index.html";
+    File file = SD.open(path, FILE_READ);
+    if (!file) {
+      server.send(404, "text/plain", "File Not Found");
+      return;
+    }
+    server.streamFile(file, getContentType(path));
+    file.close();
+  });
+
+  // Control Relay 1
+  server.on("/relay1_on", []() {
+    relay1State = HIGH;
+    digitalWrite(RELAY1_PIN, relay1State);
+    server.send(200, "text/plain", "Relay 1 ON");
+  });
+
+  server.on("/relay1_off", []() {
+    relay1State = LOW;
+    digitalWrite(RELAY1_PIN, relay1State);
+    server.send(200, "text/plain", "Relay 1 OFF");
+  });
+
+  // Control Relay 2
+  server.on("/relay2_on", []() {
+    relay2State = HIGH;
+    digitalWrite(RELAY2_PIN, relay2State);
+    server.send(200, "text/plain", "Relay 2 ON");
+  });
+
+  server.on("/relay2_off", []() {
+    relay2State = LOW;
+    digitalWrite(RELAY2_PIN, relay2State);
+    server.send(200, "text/plain", "Relay 2 OFF");
+  });
+
+  // Current state API
+  server.on("/status", []() {
+    String status = String(relay1State) + "," + String(relay2State);
+    server.send(200, "text/plain", status);
+  });
+
+  server.begin();
+  Serial.println("HTTP server started");
+}
+
+void loop() {
+  server.handleClient();
+
+  if (digitalRead(BUTTON1_PIN) == LOW) {
+    relay1State = !relay1State;
+    digitalWrite(RELAY1_PIN, relay1State);
+    delay(300);
+  }
+
+  if (digitalRead(BUTTON2_PIN) == LOW) {
+    relay2State = !relay2State;
+    digitalWrite(RELAY2_PIN, relay2State);
+    delay(300);
+  }
+}
+
+String getContentType(String filename) {
+  if (filename.endsWith(".html")) return "text/html";
+  else if (filename.endsWith(".css")) return "text/css";
+  else if (filename.endsWith(".js")) return "application/javascript";
+  else if (filename.endsWith(".png")) return "image/png";
+  else if (filename.endsWith(".jpg")) return "image/jpeg";
+  else if (filename.endsWith(".gif")) return "image/gif";
+  else if (filename.endsWith(".ico")) return "image/x-icon";
+  return "text/plain";
+}
