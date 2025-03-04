@@ -1,0 +1,510 @@
+// #include <Wire.h>
+// #include <RTClib.h>
+// #include <SD.h>
+// #include <SPI.h>
+// // Sensor Pins
+// const int pirPin = 2;
+// const int soundSensorPin = 3;
+// const int ldrPin = A1;
+
+// // SD Card Module
+// const int chipSelect = 10;
+
+// // Interval Timer
+// unsigned long interval = 30000; // 30 seconds
+// unsigned long startTime;
+
+// // Counters and Flags
+// int motionCount = 0;
+// int snoreCount = 0;
+// bool isMotionDetected = false;
+// bool isSnoring = false;
+
+// // RTC Object
+// RTC_DS3231 rtc;
+
+// // File object
+// File logFile;
+
+// void setup() {
+//   Serial.begin(9600);
+  
+//   pinMode(pirPin, INPUT);
+//   pinMode(soundSensorPin, INPUT);
+//   pinMode(ldrPin, INPUT);
+
+//   // RTC Initialization
+//   if (!rtc.begin()) {
+//     Serial.println("Couldn't find RTC");
+//     while (1);
+//   }
+//   if (rtc.lostPower()) {
+//     Serial.println("RTC lost power, set the time!");
+//     // Uncomment below line to set RTC to current date & time.
+//     // rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+//   }
+
+//   // SD Card Initialization
+//   if (!SD.begin(chipSelect)) {
+//     Serial.println("SD Card initialization failed!");
+//     while (1);
+//   }
+//   Serial.println("SD Card Initialized.");
+
+//   startTime = millis();
+// }
+
+// void loop() {
+//   unsigned long currentTime = millis();
+
+//   // Sound Sensor Detection
+//   int soundDetected = digitalRead(soundSensorPin);
+//   if (soundDetected == LOW && !isSnoring) {
+//     isSnoring = true;
+//     snoreCount++;
+//     Serial.println("Snore Detected!");
+//   }
+//   if (soundDetected == HIGH) {
+//     isSnoring = false;
+//   }
+
+//   // PIR Sensor Detection
+//   int motionState = digitalRead(pirPin);
+//   if (motionState == HIGH && !isMotionDetected) {
+//     isMotionDetected = true;
+//     motionCount++;
+//     Serial.println("Motion Detected!");
+//   }
+//   if (motionState == LOW) {
+//     isMotionDetected = false;
+//   }
+
+//   // Light Intensity (LDR)
+//   int lightIntensity = analogRead(ldrPin);
+
+//   // Log data every 30s
+//   if (currentTime - startTime >= interval) {
+//     DateTime now = rtc.now();
+
+//     // Open the file
+//     logFile = SD.open("test.txt", FILE_WRITE);
+
+//     if (logFile) {
+//       logFile.print(now.year());
+//       logFile.print('/');
+//       logFile.print(now.month());
+//       logFile.print('/');
+//       logFile.print(now.day());
+//       logFile.print(' ');
+//       logFile.print(now.hour());
+//       logFile.print(':');
+//       logFile.print(now.minute());
+//       logFile.print(':');
+//       logFile.print(now.second());
+//       logFile.print(", ");
+//       logFile.print(motionCount);
+//       logFile.print(", ");
+//       logFile.print(snoreCount);
+//       logFile.print(", ");
+//       logFile.println(lightIntensity);
+
+//       logFile.close();
+//       Serial.println("Data Saved to SD Card.");
+//     } else {
+//       Serial.println("Failed to open file!");
+//     }
+
+//     // Print to Serial Monitor
+//     Serial.print("Timestamp: ");
+//     Serial.print(now.year());
+//     Serial.print('/');
+//     Serial.print(now.month());
+//     Serial.print('/');
+//     Serial.print(now.day());
+//     Serial.print(' ');
+//     Serial.print(now.hour());
+//     Serial.print(':');
+//     Serial.print(now.minute());
+//     Serial.print(':');
+//     Serial.print(now.second());
+//     Serial.print(" | Motion: ");
+//     Serial.print(motionCount);
+//     Serial.print(" | Snore: ");
+//     Serial.print(snoreCount);
+//     Serial.print(" | Light: ");
+//     Serial.println(lightIntensity);
+
+//     // Reset counts and timer
+//     motionCount = 0;
+//     snoreCount = 0;
+//     startTime = currentTime;
+//   }
+
+//   delay(50); // Small delay to reduce sensor noise
+// }
+
+
+
+
+// // #include <SPI.h>
+// // #include <SD.h>
+
+// // const int chipSelect = 10; // CS pin connected to D10
+
+// // void setup() {
+// //   Serial.begin(9600);
+// //   Serial.println("Initializing SD card...");
+
+// //   // Check if SD card is properly connected
+// //   if (!SD.begin(chipSelect)) {
+// //     Serial.println("SD Card initialization failed!");
+// //     return;
+// //   }
+// //   Serial.println("SD Card initialized successfully.");
+
+// //   // Create and write a test file
+// //   File testFile = SD.open("test.txt", FILE_WRITE);
+
+// //   if (testFile) {
+// //     Serial.println("Writing to test.txt...");
+// //     testFile.println("SD Card Module Test - SUCCESS!");
+// //     testFile.close();
+// //     Serial.println("Write successful.");
+// //   } else {
+// //     Serial.println("Failed to open test.txt for writing.");
+// //   }
+
+// //   // Read and display the contents of test.txt
+// //   testFile = SD.open("test.txt");
+// //   if (testFile) {
+// //     Serial.println("Reading test.txt...");
+// //     while (testFile.available()) {
+// //       char c = testFile.read();
+// //       Serial.print(c);
+// //     }
+// //     testFile.close();
+// //     Serial.println("\nRead successful.");
+// //   } else {
+// //     Serial.println("Failed to open test.txt for reading.");
+// //   }
+// // }
+
+// // void loop() {
+// //   // Nothing to do here
+// // }
+
+// ----------------------------------------------------
+
+
+
+// #include <Wire.h>
+// #include <RTClib.h>
+// #include <SD.h>
+// #include <SPI.h>
+
+// // Sensor Pins
+// const int pirPin = 2;
+// const int soundSensorPin = 3;
+// const int ldrPin = A0;
+
+// // SD Card Module
+// const int chipSelect = 10;
+
+// // Interval Timer
+// unsigned long interval = 30000; // 30 seconds
+// unsigned long startTime;
+
+// // Counters and Flags
+// int motionCount = 0;
+// int snoreCount = 0;
+// bool isMotionDetected = false;
+// bool isSnoring = false;
+
+// // RTC Object
+// RTC_DS3231 rtc;
+// bool rtcAvailable = true;
+
+// // File object
+// File logFile;
+
+// void setup() {
+//   Serial.begin(9600);
+
+//   pinMode(pirPin, INPUT);
+//   pinMode(soundSensorPin, INPUT);
+//   pinMode(ldrPin, INPUT);
+
+//   // RTC Initialization
+//   if (!rtc.begin()) {
+//     Serial.println("RTC not found. Proceeding without RTC.");
+//     rtcAvailable = false;
+//   }
+//   if (rtcAvailable && rtc.lostPower()) {
+//     Serial.println("RTC lost power, set the time!");
+//     // rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+//   }
+
+//   // SD Card Initialization
+//   if (!SD.begin(chipSelect)) {
+//     Serial.println("SD Card initialization failed!");
+//     while (1);
+//   }
+//   Serial.println("SD Card Initialized.");
+
+//   startTime = millis();
+// }
+
+// void loop() {
+//   unsigned long currentTime = millis();
+
+//   // Sound Sensor Detection
+//   int soundDetected = digitalRead(soundSensorPin);
+//   if (soundDetected == LOW && !isSnoring) {
+//     isSnoring = true;
+//     snoreCount++;
+//     Serial.println("Snore Detected!");
+//   }
+//   if (soundDetected == HIGH) {
+//     isSnoring = false;
+//   }
+
+//   // PIR Sensor Detection
+//   int motionState = digitalRead(pirPin);
+//   if (motionState == HIGH && !isMotionDetected) {
+//     isMotionDetected = true;
+//     motionCount++;
+//     Serial.println("Motion Detected!");
+//   }
+//   if (motionState == LOW) {
+//     isMotionDetected = false;
+//   }
+
+//   // Light Intensity (LDR)
+//   int lightIntensity = analogRead(ldrPin);
+
+//   // Log data every 30s
+//   if (currentTime - startTime >= interval) {
+//     String timestamp;
+
+//     if (rtcAvailable) {
+//       DateTime now = rtc.now();
+//       timestamp = String(now.year()) + "/" + String(now.month()) + "/" + String(now.day()) + " " +
+//                   String(now.hour()) + ":" + String(now.minute()) + ":" + String(now.second());
+//     } else {
+//       timestamp = "NO_RTC_" + String(currentTime / 1000) + "s";
+//     }
+
+//     // Open the file
+//     logFile = SD.open("test.txt", FILE_WRITE);
+
+//     if (logFile) {
+//       logFile.print(timestamp);
+//       logFile.print(", ");
+//       logFile.print(motionCount);
+//       logFile.print(", ");
+//       logFile.print(snoreCount);
+//       logFile.print(", ");
+//       logFile.println(lightIntensity);
+//       logFile.close();
+//       Serial.println("Data Saved to SD Card.");
+//     } else {
+//       Serial.println("Failed to open file!");
+//     }
+
+//     // Print to Serial Monitor
+//     Serial.print("Timestamp: ");
+//     Serial.print(timestamp);
+//     Serial.print(" | Motion: ");
+//     Serial.print(motionCount);
+//     Serial.print(" | Snore: ");
+//     Serial.print(snoreCount);
+//     Serial.print(" | Light: ");
+//     Serial.println(lightIntensity);
+
+//     // Reset counts and timer
+//     motionCount = 0;
+//     snoreCount = 0;
+//     startTime = currentTime;
+//   }
+
+//   delay(50);
+// }
+
+
+// ------------------------------------------------------------------------------------
+
+
+#include <Wire.h>
+#include <RTClib.h>
+#include <SD.h>
+#include <SPI.h>
+#include <LiquidCrystal_I2C.h> // Include LCD Library
+
+// Sensor Pins
+const int pirPin = 2;
+const int soundSensorPin = 3;
+const int ldrPin = A0;
+
+// SD Card Module
+const int chipSelect = 10;
+
+// Interval Timer
+unsigned long interval = 30000; // 30 seconds
+unsigned long startTime;
+
+// Counters and Flags
+int motionCount = 0;
+int snoreCount = 0;
+bool isMotionDetected = false;
+bool isSnoring = false;
+
+// RTC Object
+RTC_DS3231 rtc;
+bool rtcAvailable = true;
+
+// LCD Object
+LiquidCrystal_I2C lcd(0x27, 16, 2); // Adjust address if needed
+
+// File object
+File logFile;
+
+void setup() {
+  Serial.begin(9600);
+  lcd.begin(16, 2);
+  lcd.backlight();
+  lcd.print("Initializing...");
+
+  pinMode(pirPin, INPUT);
+  pinMode(soundSensorPin, INPUT);
+  pinMode(ldrPin, INPUT);
+
+  // RTC Initialization
+  if (!rtc.begin()) {
+    Serial.println("RTC not found. Proceeding without RTC.");
+    lcd.clear();
+    lcd.print("RTC not found!");
+    rtcAvailable = false;
+  }
+  if (rtcAvailable && rtc.lostPower()) {
+    Serial.println("RTC lost power, set the time!");
+    lcd.clear();
+    lcd.print("RTC Lost Power!");
+  }
+
+  // SD Card Initialization
+  if (!SD.begin(chipSelect)) {
+    Serial.println("SD Card initialization failed!");
+    lcd.clear();
+    lcd.print("SD Init Failed!");
+    while (1);
+  }
+  Serial.println("SD Card Initialized.");
+  lcd.clear();
+  lcd.print("SD Card Ready!");
+
+  startTime = millis();
+}
+
+void loop() {
+  unsigned long currentTime = millis();
+
+  // Sound Sensor Detection
+  int soundDetected = digitalRead(soundSensorPin);
+  if (soundDetected == LOW && !isSnoring) {
+    isSnoring = true;
+    snoreCount++;
+    Serial.println("Snore Detected!");
+    lcd.clear();
+    lcd.print("Snore Detected!");
+    delay(1000);
+  }
+  if (soundDetected == HIGH) {
+    isSnoring = false;
+  }
+
+  // PIR Sensor Detection
+  int motionState = digitalRead(pirPin);
+  if (motionState == HIGH && !isMotionDetected) {
+    isMotionDetected = true;
+    motionCount++;
+    Serial.println("Motion Detected!");
+    lcd.clear();
+    lcd.print("Motion Detected!");
+    delay(2000);
+  }
+  if (motionState == LOW) {
+    isMotionDetected = false;
+  }
+
+  // Light Intensity (LDR)
+  int lightIntensity = analogRead(ldrPin);
+
+  // Log data every 30s
+  if (currentTime - startTime >= interval) {
+    String timestamp;
+
+    if (rtcAvailable) {
+      DateTime now = rtc.now();
+      timestamp = String(now.year()) + "/" + String(now.month()) + "/" + String(now.day()) + " " +
+                  String(now.hour()) + ":" + String(now.minute()) + ":" + String(now.second());
+    } else {
+      timestamp = "NO_RTC_" + String(currentTime / 1000) + "s";
+    }
+
+    // Open the file
+    logFile = SD.open("test.txt", FILE_WRITE);
+
+    if (logFile) {
+      logFile.print(timestamp);
+      logFile.print(", ");
+      logFile.print(motionCount);
+      logFile.print(", ");
+      logFile.print(snoreCount);
+      logFile.print(", ");
+      logFile.println(lightIntensity);
+      logFile.close();
+      Serial.println("Data Saved to SD Card.");
+      lcd.clear();
+      lcd.print("Data Saved!");
+    } else {
+      Serial.println("Failed to open file!");
+      lcd.clear();
+      lcd.print("SD Write Failed!");
+    }
+
+    // Print to Serial Monitor & LCD
+    Serial.print("Timestamp: ");
+    Serial.print(timestamp);
+    Serial.print(" | Motion: ");
+    Serial.print(motionCount);
+    Serial.print(" | Snore: ");
+    Serial.print(snoreCount);
+    Serial.print(" | Light: ");
+    Serial.println(lightIntensity);
+
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Motion count:");
+     lcd.setCursor(0, 1);
+    lcd.print(motionCount);
+    delay(3000);
+        lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print(" Snore count:");
+         lcd.setCursor(0, 1);
+    lcd.print(snoreCount);
+     delay(3000);
+        lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Light:");
+     lcd.setCursor(0, 1);
+    lcd.print(lightIntensity);
+delay(3000);
+    // Reset counts and timer
+    motionCount = 0;
+    snoreCount = 0;
+    startTime = currentTime;
+  }
+
+  delay(50);
+}
